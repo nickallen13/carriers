@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CARRIERS — one sound, five bodies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Archivo:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14100D;          /* tape-oxide black */
+    --ink:#E8E1D5;         /* aged silver-cream */
+    --muted:#8A7F70;
+    --hairline:rgba(232,225,213,.14);
+    --wax:#D29A4B;
+    --vinyl:#B9C0C9;
+    --oxide:#C0603A;       /* literal ferric oxide */
+    --laser:#FF4B4B;
+    --file:#F5F2EC;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Archivo',system-ui,sans-serif;
+    font-size:17px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+
+  /* ---------- hero ---------- */
+  header{padding:72px 0 40px;border-bottom:1px solid var(--hairline)}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;
+    color:var(--muted);text-transform:uppercase;margin-bottom:22px;
+  }
+  h1{
+    font-family:'Young Serif',serif;font-weight:400;
+    font-size:clamp(56px,11vw,104px);line-height:.95;letter-spacing:-.01em;
+    margin-bottom:26px;
+  }
+  .thesis{max-width:560px;font-size:19px;color:var(--ink)}
+  .thesis em{font-style:normal;color:var(--wax)}
+  .control{display:flex;align-items:center;gap:18px;margin:34px 0 10px;flex-wrap:wrap}
+  button#play{
+    font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--bg);background:var(--ink);
+    border:none;border-radius:999px;padding:14px 26px;cursor:pointer;
+  }
+  button#play:hover{background:#fff}
+  button#play:focus-visible{outline:2px solid var(--wax);outline-offset:3px}
+  .control span{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);max-width:340px;line-height:1.5}
+  canvas{display:block;width:100%}
+  #scope{height:110px;margin-top:26px}
+
+  /* ---------- format sections ---------- */
+  section{padding:64px 0;border-bottom:1px solid var(--hairline)}
+  .spec{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;margin-bottom:14px;
+  }
+  .spec b{font-weight:500}
+  h2{
+    font-family:'Young Serif',serif;font-weight:400;
+    font-size:clamp(30px,4.6vw,42px);line-height:1.1;margin-bottom:16px;
+  }
+  section p{max-width:600px;color:var(--ink)}
+  section p + p{margin-top:12px}
+  .viz{height:170px;margin-top:30px}
+  .caption{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;
+    color:var(--muted);text-transform:uppercase;margin-top:10px;
+  }
+  /* per-format accent — the color IS the material */
+  #s-wax   .spec, #s-wax   .spec b{color:var(--wax)}
+  #s-vinyl .spec, #s-vinyl .spec b{color:var(--vinyl)}
+  #s-tape  .spec, #s-tape  .spec b{color:var(--oxide)}
+  #s-cd    .spec b{
+    background:linear-gradient(90deg,#6FD3E8,#E86FCB,#E8C86F);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  #s-cd .spec{color:var(--vinyl)}
+  #s-file  .spec, #s-file  .spec b{color:var(--file)}
+
+  footer{padding:56px 0 72px}
+  footer p{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--muted);line-height:1.8}
+
+  @media (max-width:600px){
+    header{padding:48px 0 32px}
+    section{padding:48px 0}
+    .viz{height:140px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">An experiment · Claude was given carte blanche · this is what it chose</div>
+    <h1>CARRIERS</h1>
+    <p class="thesis">For 150 years, humans have taught objects to remember sound. It is the same trick every time: <em>a surface moving past a reader at constant speed.</em> Only the marks change. Below, one two-and-a-half-second sound is held five different ways.</p>
+    <div class="control">
+      <button id="play" aria-label="Play the sound">&#9654;&nbsp;&nbsp;Press play</button>
+      <span>Four notes travel down this page — carved, wiggled, magnetized, counted, and finally set loose.</span>
+    </div>
+    <canvas id="scope" aria-label="Waveform of the sound"></canvas>
+    <div class="caption">The signal · A minor seventh, ascending · playhead sweeps on play</div>
+  </div>
+</header>
+
+<section id="s-wax">
+  <div class="wrap">
+    <div class="spec"><b>01 · 1877 · WAX CYLINDER</b> · sound as depth</div>
+    <h2>Carve it.</h2>
+    <p>Edison's phonograph cut sound vertically — "hill and dale." Loud moments gouged deeper valleys into the wax; quiet ones barely scratched the surface. A needle dropped into yesterday's groove pushed the air the same way a voice once did.</p>
+    <p>No electricity in the playback. No code. Just geometry, remembered.</p>
+    <canvas class="viz" id="v-wax" aria-label="Animated groove cross-section, depth follows the signal"></canvas>
+    <div class="caption">Groove cross-section · depth = amplitude · stylus riding at read point →</div>
+  </div>
+</section>
+
+<section id="s-vinyl">
+  <div class="wrap">
+    <div class="spec"><b>02 · 1948 · MICROGROOVE LP</b> · sound as wiggle</div>
+    <h2>Turn the cut sideways.</h2>
+    <p>The long-playing record moved the signal into the horizontal: the groove swings left and right while its depth stays steady, and the stylus is thrown side to side thousands of times a second. Later, stereo split the difference — one channel per groove wall, at 45 degrees each.</p>
+    <p>Unrolled, the groove on a single LP side runs roughly half a kilometer. You own sound by the meter.</p>
+    <canvas class="viz" id="v-vinyl" aria-label="Animated groove seen from above, wiggling laterally with the signal"></canvas>
+    <div class="caption">Groove from above · lateral displacement = signal · walls in silver</div>
+  </div>
+</section>
+
+<section id="s-tape">
+  <div class="wrap">
+    <div class="spec"><b>03 · 1935&rarr;1963 · MAGNETIC TAPE</b> · sound as rust</div>
+    <h2>Persuade the rust.</h2>
+    <p>Tape is ferric oxide — rust — glued to plastic. As it streams past the record head, billions of microscopic particles are nudged into alignment with the signal's magnetic field, and they simply stay that way. Nothing is carved. The mark is invisible.</p>
+    <p>It was the first carrier you could erase — which made it the first you could re-record, overdub, splice. The recording studio as an instrument begins here.</p>
+    <canvas class="viz" id="v-tape" aria-label="Animated oxide particles aligning with the signal as tape passes a head"></canvas>
+    <div class="caption">Oxide particle orientation · field strength = signal · head at right</div>
+  </div>
+</section>
+
+<section id="s-cd">
+  <div class="wrap">
+    <div class="spec"><b>04 · 1982 · COMPACT DISC</b> · sound as arithmetic</div>
+    <h2>Count it.</h2>
+    <p>The disc stops imitating the wave and starts measuring it: 44,100 readings per second, each written as a 16-bit number, stamped as pits in polycarbonate and read by a laser. The trick most people never hear about — a pit isn't a one. The <i>edges</i> are the ones. Flat stretches, pit or land, are runs of zeros.</p>
+    <p>The rainbow on a disc's surface isn't ink. It's the data itself, spaced so finely it diffracts light.</p>
+    <canvas class="viz" id="v-cd" aria-label="Animated pit and land track with laser read point, showing quantized bits"></canvas>
+    <div class="caption">Pit/land track · shown at 4-bit so you can watch · transitions = 1 · &lambda; 780nm</div>
+  </div>
+</section>
+
+<section id="s-file">
+  <div class="wrap">
+    <div class="spec"><b>05 · NOW · THE FILE</b> · sound with no body</div>
+    <h2>Let go of the object.</h2>
+    <p>The final step removes the surface entirely. The numbers no longer need a dedicated body — they live wherever numbers live, copied perfectly, endlessly, nowhere in particular. Sound becomes weightless.</p>
+    <p>But everything above this line is dying. Wax softens, vinyl wears, oxide sheds from its backing, discs rot from the edges in. No carrier lasts; sound survives only by moving to the next one before the last one fails. An archive isn't a vault. It's a relay.</p>
+    <canvas class="viz" id="v-file" aria-label="The raw sample values of the sound, scrolling as hexadecimal numbers"></canvas>
+    <div class="caption">The same signal · raw sample values · this is all a recording is</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><a href="index.html" style="color:#D29A4B">&larr; CARRIERS · Field Notes — the essay series this page started</a><br><br>Built in one sitting by Claude, given carte blanche · August 2026<br>
+    The four notes are mine — I picked A, C, E, G. It seemed like a hopeful chord.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  /* ---------- the signal: one sound shared by everything on the page ---------- */
+  var NOTE_LEN = 0.62, NOTES = [110.00, 130.81, 164.81, 196.00]; /* A2 C3 E3 G3 */
+  var DUR = NOTE_LEN * NOTES.length;
+
+  function signalAt(t){
+    if(t < 0 || t >= DUR) return 0;
+    var i = Math.floor(t / NOTE_LEN);
+    var tau = t - i * NOTE_LEN;
+    var f = NOTES[i];
+    var env = Math.min(1, tau / 0.012) * Math.exp(-2.1 * tau);
+    var v = Math.sin(2*Math.PI*f*tau) * 0.72
+          + Math.sin(4*Math.PI*f*tau) * 0.20
+          + Math.sin(6*Math.PI*f*tau) * 0.07;
+    return env * v;
+  }
+  /* slow envelope-ish trace for visuals that can't show 110Hz per-pixel */
+  function shapeAt(t){
+    if(t < 0 || t >= DUR) return 0;
+    var i = Math.floor(t / NOTE_LEN);
+    var tau = t - i * NOTE_LEN;
+    var f = NOTES[i];
+    var env = Math.min(1, tau / 0.012) * Math.exp(-2.1 * tau);
+    return env * Math.sin(2*Math.PI * (f/16) * tau); /* pitch-down so the wiggle is visible */
+  }
+
+  /* ---------- audio ---------- */
+  var actx = null, playing = false, playStart = 0, btn = document.getElementById('play');
+  function makeBuffer(){
+    var sr = actx.sampleRate, buf = actx.createBuffer(1, Math.ceil(sr*DUR), sr);
+    var d = buf.getChannelData(0);
+    for(var n=0;n<d.length;n++){ d[n] = signalAt(n/sr) * 0.85; }
+    return buf;
+  }
+  btn.addEventListener('click', function(){
+    if(playing) return;
+    if(!actx){ actx = new (window.AudioContext||window.webkitAudioContext)(); }
+    if(actx.state === 'suspended') actx.resume();
+    var src = actx.createBufferSource();
+    src.buffer = makeBuffer();
+    src.connect(actx.destination);
+    src.start();
+    playing = true; playStart = actx.currentTime;
+    btn.innerHTML = "&#9679;&nbsp;&nbsp;Playing";
+    src.onended = function(){ playing = false; btn.innerHTML = "&#9654;&nbsp;&nbsp;Play it again"; };
+  });
+
+  /* ---------- shared clock ---------- */
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var idleT = 0.9, last = performance.now();
+  function now(){
+    if(playing && actx) return actx.currentTime - playStart;
+    return idleT;
+  }
+
+  /* ---------- canvas plumbing ---------- */
+  var C = {ink:'#E8E1D5', muted:'#8A7F70', wax:'#D29A4B', vinyl:'#B9C0C9',
+           oxide:'#C0603A', laser:'#FF4B4B', file:'#F5F2EC', bg:'#14100D'};
+  var visible = {};
+  function setup(id){
+    var cv = document.getElementById(id), ctx = cv.getContext('2d');
+    function size(){
+      var r = cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio||1, 2);
+      cv.width = r.width*dpr; cv.height = r.height*dpr;
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      cv._w = r.width; cv._h = r.height;
+    }
+    size(); window.addEventListener('resize', size);
+    visible[id] = true;
+    if('IntersectionObserver' in window){
+      visible[id] = false;
+      new IntersectionObserver(function(es){ es.forEach(function(e){ visible[id]=e.isIntersecting; }); },
+        {rootMargin:'80px'}).observe(cv);
+    }
+    return {cv:cv, ctx:ctx};
+  }
+
+  var scope = setup('scope'), wax = setup('v-wax'), vin = setup('v-vinyl'),
+      tape = setup('v-tape'), cd = setup('v-cd'), fil = setup('v-file');
+
+  var PX = 240; /* pixels of media per second */
+  function tAtX(t, x, w){ return t - (w - x)/PX; }
+
+  /* ---------- 0 · master scope: whole waveform + playhead ---------- */
+  function drawScope(t){
+    var w = scope.cv._w, h = scope.cv._h, ctx = scope.ctx;
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle = 'rgba(232,225,213,.22)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0,h/2); ctx.lineTo(w,h/2); ctx.stroke();
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 1.4; ctx.beginPath();
+    for(var x=0;x<=w;x++){
+      var v = signalAt(x/w*DUR);
+      var y = h/2 - v*(h/2-8);
+      x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    var px = Math.max(0, Math.min(1, t/DUR)) * w;
+    ctx.strokeStyle = C.wax; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(px,4); ctx.lineTo(px,h-4); ctx.stroke();
+  }
+
+  /* ---------- 1 · wax: depth profile + stylus ---------- */
+  function drawWax(t){
+    var w = wax.cv._w, h = wax.cv._h, ctx = wax.ctx;
+    ctx.clearRect(0,0,w,h);
+    var surf = h*0.30, readX = w-56;
+    ctx.beginPath(); ctx.moveTo(0,surf);
+    for(var x=0;x<=w;x++){
+      var v = shapeAt(tAtX(t,x,readX+0)); /* media flows toward stylus */
+      ctx.lineTo(x, surf + h*0.22 + v*h*0.17);
+    }
+    ctx.lineTo(w,h); ctx.lineTo(0,h); ctx.closePath();
+    ctx.fillStyle = 'rgba(210,154,75,.16)'; ctx.fill();
+    ctx.strokeStyle = C.wax; ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    for(var x2=0;x2<=w;x2++){
+      var v2 = shapeAt(tAtX(t,x2,readX));
+      var y2 = surf + h*0.22 + v2*h*0.17;
+      x2===0 ? ctx.moveTo(x2,y2) : ctx.lineTo(x2,y2);
+    }
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(232,225,213,.35)';
+    ctx.beginPath(); ctx.moveTo(0,surf); ctx.lineTo(w,surf); ctx.stroke();
+    /* stylus */
+    var vy = surf + h*0.22 + shapeAt(t)*h*0.17;
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(readX, 6); ctx.lineTo(readX, vy-7); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(readX-5, vy-9); ctx.lineTo(readX+5, vy-9); ctx.lineTo(readX, vy); ctx.closePath();
+    ctx.fillStyle = C.ink; ctx.fill();
+  }
+
+  /* ---------- 2 · vinyl: lateral wiggle, two walls ---------- */
+  function drawVinyl(t){
+    var w = vin.cv._w, h = vin.cv._h, ctx = vin.ctx;
+    ctx.clearRect(0,0,w,h);
+    var yc = h/2, half = 13, readX = w-56;
+    ctx.lineWidth = 1.6;
+    [ -1, 1 ].forEach(function(s){
+      ctx.strokeStyle = s<0 ? C.vinyl : 'rgba(185,192,201,.55)';
+      ctx.beginPath();
+      for(var x=0;x<=w;x++){
+        var v = shapeAt(tAtX(t,x,readX));
+        var y = yc + v*h*0.26 + s*half;
+        x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    });
+    /* faint neighboring grooves */
+    ctx.strokeStyle = 'rgba(185,192,201,.14)';
+    [-1,1].forEach(function(row){
+      ctx.beginPath();
+      for(var x=0;x<=w;x++){
+        var v = shapeAt(tAtX(t,x,readX) - row*0.31);
+        var y = yc + row*h*0.38 + v*h*0.10;
+        x===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    });
+    /* stylus */
+    var sy = yc + shapeAt(t)*h*0.26;
+    ctx.fillStyle = C.ink;
+    ctx.beginPath(); ctx.arc(readX, sy, 5, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = 'rgba(232,225,213,.4)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(readX, 4); ctx.lineTo(readX, sy-8); ctx.stroke();
+  }
+
+  /* ---------- 3 · tape: oxide particles align with field ---------- */
+  function drawTape(t){
+    var w = tape.cv._w, h = tape.cv._h, ctx = tape.ctx;
+    ctx.clearRect(0,0,w,h);
+    var headX = w-46;
+    /* tape body */
+    ctx.fillStyle = 'rgba(192,96,58,.08)';
+    ctx.fillRect(0, h*0.18, w, h*0.64);
+    var step = 7, len = 9;
+    for(var x=4; x<w-2; x+=step){
+      for(var row=0; row<4; row++){
+        var y = h*0.26 + row*(h*0.48/3);
+        var v = shapeAt(tAtX(t, x, headX) - row*0.004);
+        var jitter = Math.sin(x*12.9898 + row*78.233)*0.5; /* frozen randomness */
+        var ang = v * 1.05 + jitter*0.16;
+        var a = 0.22 + Math.min(0.78, Math.abs(v)*1.1);
+        ctx.strokeStyle = 'rgba(192,96,58,'+a.toFixed(2)+')';
+        ctx.lineWidth = 1.6;
+        ctx.beginPath();
+        ctx.moveTo(x - Math.cos(ang)*len/2, y - Math.sin(ang)*len/2);
+        ctx.lineTo(x + Math.cos(ang)*len/2, y + Math.sin(ang)*len/2);
+        ctx.stroke();
+      }
+    }
+    /* head */
+    ctx.fillStyle = C.ink;
+    ctx.fillRect(headX-3, h*0.06, 6, h*0.10);
+    ctx.fillRect(headX-3, h*0.84, 6, h*0.10);
+    ctx.strokeStyle = C.ink; ctx.lineWidth = 1;
+    ctx.strokeRect(headX-8, h*0.02, 16, h*0.96);
+  }
+
+  /* ---------- 4 · cd: quantize to 4-bit, pits & lands, edges are ones ---------- */
+  function drawCD(t){
+    var w = cd.cv._w, h = cd.cv._h, ctx = cd.ctx;
+    ctx.clearRect(0,0,w,h);
+    var trackY = h*0.42, trackH = h*0.26, readX = w-56;
+    var SAMPLE_DT = 0.045, BITS = 4, bitPx = 16;
+    /* silver track */
+    ctx.fillStyle = 'rgba(185,192,201,.10)';
+    ctx.fillRect(0, trackY, w, trackH);
+    /* pits: state toggles on each 1-bit */
+    var span = w / bitPx; /* bits visible */
+    var startBit = Math.floor((t * (1/SAMPLE_DT) * BITS)) - Math.floor(readX / bitPx);
+    var state = (Math.abs(startBit) % 2) === 0; /* deterministic-enough seed for pit phase */
+    for(var b=0;b<=span;b++){
+      var bitIndex = startBit + b;
+      var sIdx = Math.floor(bitIndex / BITS);
+      var bPos  = ((bitIndex % BITS) + BITS) % BITS;
+      var ts = sIdx * SAMPLE_DT;
+      var q = Math.max(0, Math.min(15, Math.round((shapeAt(ts)+1)/2 * 15)));
+      var bit = (q >> (BITS-1-bPos)) & 1;
+      var x = b * bitPx;
+      if(bit === 1){
+        state = !state;
+        ctx.strokeStyle = 'rgba(232,225,213,.45)';
+        ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x, trackY-4); ctx.lineTo(x, trackY+trackH+4); ctx.stroke();
+      }
+      if(state){ /* pit */
+        var grad = ctx.createLinearGradient(x,0,x+bitPx,0);
+        grad.addColorStop(0,'rgba(111,211,232,.55)');
+        grad.addColorStop(.5,'rgba(232,111,203,.55)');
+        grad.addColorStop(1,'rgba(232,200,111,.55)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(x, trackY+3, bitPx, trackH-6);
+      }
+    }
+    /* laser */
+    ctx.strokeStyle = C.laser; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(readX, h*0.06); ctx.lineTo(readX, trackY-2); ctx.stroke();
+    ctx.fillStyle = C.laser;
+    ctx.beginPath(); ctx.arc(readX, trackY + trackH/2, 4, 0, Math.PI*2); ctx.fill();
+    ctx.font = "10px 'IBM Plex Mono',monospace";
+    ctx.fillStyle = 'rgba(138,127,112,.9)';
+    ctx.fillText("EDGE = 1", 8, trackY - 10);
+    ctx.fillText("FLAT = 0s", 8, trackY + trackH + 18);
+  }
+
+  /* ---------- 5 · file: the numbers themselves ---------- */
+  function drawFile(t){
+    var w = fil.cv._w, h = fil.cv._h, ctx = fil.ctx;
+    ctx.clearRect(0,0,w,h);
+    ctx.font = "12px 'IBM Plex Mono',monospace";
+    var colW = 62, SAMPLE_DT = 0.05, readX = w-40;
+    for(var x = -colW; x < w; x += colW){
+      var ts = Math.floor(tAtX(t, x + colW/2, readX)/SAMPLE_DT)*SAMPLE_DT;
+      if(ts < 0 || ts >= DUR) continue;
+      var col = Math.floor(x/colW);
+      for(var row=0; row<5; row++){
+        var tv = ts + row*SAMPLE_DT*0.2;
+        var v = signalAt(tv);
+        var q = Math.max(-32768, Math.min(32767, Math.round(v*32767)));
+        var hex = (q & 0xFFFF).toString(16).toUpperCase().padStart(4,'0');
+        var a = 0.25 + Math.abs(v)*0.75;
+        ctx.fillStyle = 'rgba(245,242,236,'+a.toFixed(2)+')';
+        ctx.fillText('0x'+hex, x+6, 26 + row*((h-40)/4));
+      }
+    }
+  }
+
+  /* ---------- loop ---------- */
+  function frame(ts){
+    var dt = (ts - last)/1000; last = ts;
+    if(!playing && !reduced){ idleT += dt*0.32; if(idleT > DUR+0.4) idleT = -0.2; }
+    var t = now();
+    if(visible['scope'])  drawScope(t);
+    if(visible['v-wax'])  drawWax(t);
+    if(visible['v-vinyl'])drawVinyl(t);
+    if(visible['v-tape']) drawTape(t);
+    if(visible['v-cd'])   drawCD(t);
+    if(visible['v-file']) drawFile(t);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
